@@ -90,6 +90,14 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     session.previous();
   }
 
+  function toggleControlsFromSurface(event: React.MouseEvent<HTMLElement>) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const interactiveSelector = "button, input, textarea, select, summary, a, .optionPanel, .controlDock";
+    if (target.closest(interactiveSelector)) return;
+    setShowControls((value) => !value);
+  }
+
   if (session.sessionComplete) {
     return (
       <CompletionPage
@@ -124,13 +132,12 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
   }
 
   return (
-    <main className="page practicePage" onPointerDown={() => setShowControls((value) => !value)}>
+    <main className="page practicePage" onClick={toggleControlsFromSurface}>
       <header className="practiceTop">
         <button
           className="ghost optionButton"
           type="button"
           aria-expanded={showOptions}
-          onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => {
             event.stopPropagation();
             setShowOptions((value) => !value);
@@ -141,7 +148,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
       </header>
 
       {showOptions ? (
-        <section className="optionPanel" aria-label="연습 옵션" onPointerDown={(event) => event.stopPropagation()}>
+        <section className="optionPanel" aria-label="연습 옵션">
           <div className="statusPills" aria-label="현재 연습 상태">
             <span>
               {session.currentNumber}/{session.total}
@@ -167,7 +174,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
       <QuestionCard category={session.currentQuestion.category} question={session.currentQuestion.question} />
 
       {!showAnswer ? (
-        <section className="thinkingPanel" aria-label="생각 시간" onPointerDown={(event) => event.stopPropagation()}>
+        <section className="thinkingPanel" aria-label="생각 시간">
           <Countdown seconds={5} onComplete={completeCountdown} />
           <button type="button" onClick={() => setShowAnswer(true)}>
             바로 보기
@@ -187,7 +194,6 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
           />
           <div
             className={showControls ? "buttonGrid controlDock visible" : "buttonGrid controlDock"}
-            onPointerDown={(event) => event.stopPropagation()}
           >
             <div className="readinessControl" aria-label="현재 질문 readiness">
               <span>Readiness</span>
