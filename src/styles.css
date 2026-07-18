@@ -1,0 +1,615 @@
+:root {
+  color-scheme: dark;
+  --bg: #000;
+  --surface: #080808;
+  --surface-strong: #101010;
+  --text: #b9b9b9;
+  --muted: #8c8c8c;
+  --line: #2a2a2a;
+  --primary: #d0d0d0;
+  --primary-strong: #f0f0f0;
+  --accent: #a8a8a8;
+  --danger: #ff8585;
+  --focus: #d8d8d8;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg);
+  scroll-padding-bottom: 9rem;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.72rem 1rem;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:hover {
+  border-color: var(--primary);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.primary {
+  background: #d0d0d0;
+  border-color: var(--primary);
+  color: #050505;
+}
+
+.primary:hover {
+  background: var(--primary-strong);
+}
+
+.ghost {
+  background: transparent;
+}
+
+.danger {
+  border-color: rgba(156, 47, 47, 0.35);
+  color: var(--danger);
+}
+
+.page {
+  width: min(100%, 900px);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.practicePage {
+  width: min(100%, 1120px);
+}
+
+.homeHeader,
+.completionPage {
+  padding: 2.5rem 0 1.4rem;
+}
+
+.eyebrow,
+.category {
+  display: inline-flex;
+  margin: 0 0 0.65rem;
+  color: var(--accent);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+.homeHeader h1,
+.completionPage h1 {
+  max-width: 760px;
+  margin-bottom: 0.9rem;
+  font-size: clamp(2rem, 8vw, 4.3rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.homeHeader p,
+.completionPage p {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.toolbar {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+  margin: 1rem 0 2rem;
+}
+
+.ratioSelector {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ratioSelector legend {
+  margin-bottom: 0.55rem;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.ratioOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.ratioButton {
+  min-height: 40px;
+  padding: 0.55rem 0.78rem;
+}
+
+.ratioButton.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.ratioSelector.compact {
+  margin: 0.65rem 0 1rem;
+}
+
+.ratioSelector.compact legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.setList {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.setList > h2 {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.setCard,
+.keySentenceCard,
+.answerCard,
+.previewPanel,
+.sampleBox {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.setCard {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.setCard h2 {
+  margin-bottom: 0.4rem;
+  font-size: 1.18rem;
+}
+
+.setCard p {
+  margin-bottom: 0.25rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.setActions,
+.buttonRow,
+.buttonGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.screenHeader,
+.practiceTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.screenHeader h1 {
+  margin-bottom: 0.25rem;
+  font-size: 1.8rem;
+  text-align: right;
+}
+
+.importLayout {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.field textarea {
+  min-height: 320px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+.sampleBox {
+  padding: 0.8rem 1rem;
+}
+
+.sampleBox summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.sampleBox pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.previewPanel {
+  padding: 1rem;
+}
+
+.previewList {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.previewItem {
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+}
+
+.previewItem p {
+  margin: 0.4rem 0;
+  line-height: 1.55;
+}
+
+.errorText {
+  color: var(--danger);
+  font-weight: 800;
+}
+
+.warningText {
+  color: #856017;
+  font-weight: 800;
+}
+
+.practicePage {
+  min-height: 100vh;
+  padding-bottom: calc(15rem + env(safe-area-inset-bottom, 0px));
+}
+
+.statusPills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.4rem;
+}
+
+.statusPills span {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.optionButton {
+  margin-left: auto;
+}
+
+.optionPanel {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0.8rem 0 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.9rem;
+  background: rgba(8, 8, 8, 0.96);
+}
+
+.toggleField {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.toggleField input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--primary);
+}
+
+.questionCard {
+  padding: clamp(0.65rem, 2vw, 1.2rem) 0 clamp(1rem, 2vw, 1.6rem);
+}
+
+.questionCard h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5.5vw, 4.2rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.thinkingPanel {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  border-top: 1px solid transparent;
+  padding: 2.5rem 0;
+  text-align: center;
+}
+
+.countdown p {
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.countdownNumber {
+  font-size: 6rem;
+  line-height: 1;
+  font-weight: 900;
+  color: var(--primary);
+  transition: transform 180ms ease;
+}
+
+.answerStack {
+  display: grid;
+  gap: clamp(0.65rem, 1.5vw, 1rem);
+  padding-bottom: calc(12.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.keySentenceCard,
+.answerCard {
+  padding: clamp(0.8rem, 1.8vw, 1.25rem);
+}
+
+.keySentenceCard {
+  background: transparent;
+}
+
+.keySentenceCard h2,
+.answerCard h2 {
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.keySentenceCard p {
+  margin-bottom: 0;
+  font-size: 1.16rem;
+  line-height: 1.65;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.clozeAnswer {
+  margin-bottom: 0;
+  white-space: pre-wrap;
+  line-height: 1.72;
+  font-size: clamp(1.45rem, 1.15rem + 0.9vw, 1.84rem);
+}
+
+.blankButton {
+  position: relative;
+  min-height: 1.4em;
+  margin: 0 0.12rem;
+  padding: 0 0.08rem;
+  border: 0;
+  border-bottom: 2px solid var(--accent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  vertical-align: baseline;
+  font-weight: 800;
+}
+
+.blankButton:hover {
+  border-color: var(--primary);
+}
+
+.blankPlaceholder {
+  position: relative;
+  display: inline-block;
+  min-width: 1.4em;
+  max-width: min(100%, 30em);
+}
+
+.blankSizer {
+  display: inline-block;
+  color: transparent;
+  white-space: pre-wrap;
+}
+
+.blankButton.revealed {
+  border-bottom-color: transparent;
+  background: transparent;
+  color: var(--primary);
+}
+
+.buttonGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.readinessControl {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.55rem;
+}
+
+.readinessControl > span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.readinessButtons {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.readinessButton {
+  min-height: 38px;
+  padding: 0.45rem 0.2rem;
+}
+
+.readinessButton.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #050505;
+}
+
+.controlDock {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  left: max(1rem, env(safe-area-inset-left, 0px));
+  z-index: 5;
+  width: min(calc(100% - 2rem), 900px);
+  margin: 0 auto;
+  padding: 0.75rem;
+  max-height: min(48vh, 18rem);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 8, 8, 0.94);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(1rem);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.controlDock.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.center {
+  justify-content: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+@media (min-width: 720px) {
+  .page {
+    padding: 1.5rem;
+  }
+
+  .practicePage {
+    padding-bottom: calc(12rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .answerStack {
+    padding-bottom: calc(9.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .setCard {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .setActions {
+    justify-content: flex-end;
+    max-width: 340px;
+  }
+
+  .buttonGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .controlDock {
+    width: min(calc(100% - 3rem), 1120px);
+  }
+}
+
+@media (max-height: 760px) {
+  .practiceTop {
+    padding-top: 0.4rem;
+  }
+
+  .questionCard h1 {
+    font-size: clamp(1.8rem, 5vw, 3.25rem);
+  }
+
+  .clozeAnswer {
+    line-height: 1.58;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+
+  .primary {
+    color: #050505;
+  }
+
+  .blankButton {
+    background: transparent;
+  }
+}

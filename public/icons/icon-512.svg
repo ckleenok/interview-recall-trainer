@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Interview Trainer icon">
+  <rect width="512" height="512" rx="96" fill="#315d55"/>
+  <path d="M120 134h272a40 40 0 0 1 40 40v157a40 40 0 0 1-40 40H235l-83 64v-64h-32a40 40 0 0 1-40-40V174a40 40 0 0 1 40-40Z" fill="#f7f3ea"/>
+  <path d="M163 208h186M163 269h139M163 330h208" stroke="#315d55" stroke-width="32" stroke-linecap="round"/>
+</svg>
