@@ -124,7 +124,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
   }
 
   return (
-    <main className="page practicePage" onPointerDown={() => setShowControls(true)}>
+    <main className="page practicePage" onPointerDown={() => setShowControls((value) => !value)}>
       <header className="practiceTop">
         <button
           className="ghost optionButton"
