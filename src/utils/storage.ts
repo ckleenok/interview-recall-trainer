@@ -102,6 +102,8 @@ function migrateProgress(progress?: Record<string, Partial<SetProgress>>): Recor
       reviewOrder: value.reviewOrder,
       reviewIndex: value.reviewIndex,
       readiness: value.readiness as Record<string, ReadinessLevel> | undefined,
+      questionStats: value.questionStats,
+      dailyStudyCounts: value.dailyStudyCounts,
       lastStudiedAt: value.lastStudiedAt,
     };
   }

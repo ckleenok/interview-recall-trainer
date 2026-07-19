@@ -3,6 +3,7 @@ import type { AppStorage, PracticeMode, QuestionSet, QuestionTypeFilter } from "
 import { type ClozeTarget, pickHiddenAnswerTargets } from "../utils/createClozeSegments";
 import { saveLastSession, saveStorage } from "../utils/storage";
 import { shuffle } from "../utils/shuffle";
+import { getStudyCount, isDueForReview } from "../utils/studySchedule";
 
 interface UsePracticeSessionOptions {
   storage: AppStorage;
@@ -31,7 +32,10 @@ export function usePracticeSession({
     questionTypeFilter === "all"
       ? questionSet.questions
       : questionSet.questions.filter((question) => question.questionType === questionTypeFilter);
-  const reviewQuestions = questions.filter((question) => lowReadinessIds.has(question.id));
+  const reviewQuestions = questions.filter(
+    (question) =>
+      lowReadinessIds.has(question.id) || (getStudyCount(progress, question.id) > 0 && isDueForReview(progress, question.id)),
+  );
   const questionIds = new Set(questions.map((question) => question.id));
 
   function getInitialOrder() {

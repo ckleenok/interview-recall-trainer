@@ -227,6 +227,27 @@ p {
   line-height: 1.5;
 }
 
+.dailyStudyStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.dailyStudyStrip span,
+.studyBadge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
 .setActions,
 .buttonRow,
 .buttonGrid {
@@ -414,6 +435,10 @@ p {
   color: var(--primary);
   font-size: 0.86rem;
   font-weight: 900;
+}
+
+.studyBadge {
+  margin-bottom: 0.65rem;
 }
 
 .structureLine {

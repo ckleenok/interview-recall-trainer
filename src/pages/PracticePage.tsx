@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { BlankRatioSelector } from "../components/BlankRatioSelector";
 import { ClozeAnswer } from "../components/ClozeAnswer";
 import { Countdown } from "../components/Countdown";
@@ -6,6 +6,7 @@ import { QuestionCard } from "../components/QuestionCard";
 import { QuestionTypeSelector } from "../components/QuestionTypeSelector";
 import { usePracticeSession } from "../hooks/usePracticeSession";
 import type { AppStorage, PracticeMode, QuestionSet, QuestionTypeFilter, ReadinessLevel } from "../types/interview";
+import { getReviewInfo, getStudyCount, toLocalDateKey } from "../utils/studySchedule";
 import { CompletionPage } from "./CompletionPage";
 
 interface PracticePageProps {
@@ -23,6 +24,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
   const [showControls, setShowControls] = useState(false);
   const [revealToken, setRevealToken] = useState(0);
   const [hideToken, setHideToken] = useState(0);
+  const recordedQuestionRef = useRef<string | null>(null);
   const session = usePracticeSession({
     storage,
     setStorage,
@@ -39,6 +41,14 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     const params = new URLSearchParams({ setId: questionSet.id, mode, start: "resume" });
     window.history.replaceState(null, "", `#/practice?${params.toString()}`);
   }, [mode, questionSet.id, start]);
+
+  useEffect(() => {
+    if (!showAnswer || !session.currentQuestion) return;
+    const questionId = session.currentQuestion.id;
+    if (recordedQuestionRef.current === questionId) return;
+    recordedQuestionRef.current = questionId;
+    recordCurrentStudy(questionId);
+  }, [showAnswer, session.currentQuestion?.id]);
 
   function updateRatio(blankRatio: number) {
     setStorage((previous) => ({
@@ -92,11 +102,44 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     });
   }
 
+  function recordCurrentStudy(questionId: string) {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const dateKey = toLocalDateKey(now);
+
+    setStorage((previous) => {
+      const previousProgress = previous.progress[questionSet.id] ?? { sequentialIndex: 0 };
+      const previousStat = previousProgress.questionStats?.[questionId] ?? { studyCount: 0 };
+      return {
+        ...previous,
+        progress: {
+          ...previous.progress,
+          [questionSet.id]: {
+            ...previousProgress,
+            questionStats: {
+              ...(previousProgress.questionStats ?? {}),
+              [questionId]: {
+                studyCount: previousStat.studyCount + 1,
+                lastStudiedAt: nowIso,
+              },
+            },
+            dailyStudyCounts: {
+              ...(previousProgress.dailyStudyCounts ?? {}),
+              [dateKey]: (previousProgress.dailyStudyCounts?.[dateKey] ?? 0) + 1,
+            },
+            lastStudiedAt: nowIso,
+          },
+        },
+      };
+    });
+  }
+
   function goNext() {
     setShowAnswer(false);
     setShowControls(false);
     setRevealToken(0);
     setHideToken(0);
+    recordedQuestionRef.current = null;
     session.next();
   }
 
@@ -105,6 +148,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     setShowControls(false);
     setRevealToken(0);
     setHideToken(0);
+    recordedQuestionRef.current = null;
     session.previous();
   }
 
@@ -149,6 +193,10 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     );
   }
 
+  const currentProgress = storage.progress[questionSet.id];
+  const currentStudyCount = getStudyCount(currentProgress, session.currentQuestion.id);
+  const currentReviewInfo = getReviewInfo(currentProgress, session.currentQuestion.id);
+
   return (
     <main className="page practicePage" onClick={toggleControlsFromSurface}>
       <header className="practiceTop">
@@ -180,6 +228,8 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
             <span>
               유형 {storage.settings.questionTypeFilter === "all" ? "전체" : storage.settings.questionTypeFilter.toUpperCase()}
             </span>
+            <span>학습 {currentStudyCount}회</span>
+            <span>{currentReviewInfo.label}</span>
           </div>
           <BlankRatioSelector
             compact
@@ -203,6 +253,8 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
         category={session.currentQuestion.category}
         questionType={session.currentQuestion.questionType}
         question={session.currentQuestion.question}
+        studyCount={currentStudyCount}
+        reviewLabel={currentReviewInfo.label}
       />
 
       {!showAnswer ? (

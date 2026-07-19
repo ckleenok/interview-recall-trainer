@@ -1,5 +1,6 @@
 import type { PracticeMode, QuestionSet, QuestionType, QuestionTypeFilter, SetProgress } from "../types/interview";
 import { QUESTION_STRUCTURES } from "../utils/questionStructure";
+import { getRecentStudyTotal, getStudyCount, isDueForReview, toLocalDateKey } from "../utils/studySchedule";
 
 interface SetCardProps {
   questionSet: QuestionSet;
@@ -18,6 +19,24 @@ function countType(questionSet: QuestionSet, type: QuestionType): number {
   return questionSet.questions.filter((question) => question.questionType === type).length;
 }
 
+function formatShortDate(date: Date): string {
+  return new Intl.DateTimeFormat("ko-KR", { month: "numeric", day: "numeric" }).format(date);
+}
+
+function getDailyItems(progress?: SetProgress): Array<{ date: string; label: string; count: number }> {
+  const today = new Date();
+  return Array.from({ length: 7 }, (_, offset) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - offset);
+    const key = toLocalDateKey(date);
+    return {
+      date: key,
+      label: offset === 0 ? "오늘" : formatShortDate(date),
+      count: progress?.dailyStudyCounts?.[key] ?? 0,
+    };
+  });
+}
+
 export function SetCard({ questionSet, progress, questionTypeFilter, onStart, onDelete }: SetCardProps) {
   const filteredQuestions =
     questionTypeFilter === "all"
@@ -29,6 +48,18 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
   const lowReadinessCount = Object.entries(progress?.readiness ?? {}).filter(
     ([questionId, readiness]) => readiness <= 2 && filteredQuestionIds.has(questionId),
   ).length;
+  const dueReviewCount = filteredQuestions.filter(
+    (question) => getStudyCount(progress, question.id) > 0 && isDueForReview(progress, question.id),
+  ).length;
+  const reviewCount = filteredQuestions.filter(
+    (question) =>
+      (getStudyCount(progress, question.id) > 0 && isDueForReview(progress, question.id)) ||
+      (progress?.readiness?.[question.id] ?? 5) <= 2,
+  ).length;
+  const totalStudyCount = Object.values(progress?.questionStats ?? {}).reduce((sum, stat) => sum + stat.studyCount, 0);
+  const todayStudyCount = getRecentStudyTotal(progress, 1);
+  const weekStudyCount = getRecentStudyTotal(progress, 7);
+  const dailyItems = getDailyItems(progress);
   const selectedCountText =
     questionTypeFilter === "all"
       ? "전체 유형"
@@ -49,6 +80,16 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
           {progress?.randomOrder ? ` · 랜덤 ${randomIndex}/${filteredQuestions.length}` : ""}
           {` · 낮은 readiness ${lowReadinessCount}개`}
         </p>
+        <p>
+          누적 학습 {totalStudyCount}회 · 오늘 {todayStudyCount}문항 · 최근 7일 {weekStudyCount}문항 · 오늘 복습 {dueReviewCount}개
+        </p>
+        <div className="dailyStudyStrip" aria-label="최근 7일 학습 문제수">
+          {dailyItems.map((item) => (
+            <span key={item.date}>
+              {item.label} {item.count}
+            </span>
+          ))}
+        </div>
       </div>
       <div className="setActions">
         <button type="button" onClick={() => onStart("sequential", "resume")} disabled={filteredQuestions.length === 0}>
@@ -60,8 +101,8 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
         <button type="button" onClick={() => onStart("random", "new")} disabled={filteredQuestions.length === 0}>
           랜덤 연습
         </button>
-        <button type="button" onClick={() => onStart("review", "new")} disabled={lowReadinessCount === 0}>
-          낮은 readiness 복습
+        <button type="button" onClick={() => onStart("review", "new")} disabled={reviewCount === 0}>
+          복습 필요
         </button>
         {onDelete ? (
           <button className="ghost danger" type="button" onClick={onDelete}>

@@ -26,6 +26,11 @@ export interface QuestionSet {
   updatedAt: string;
 }
 
+export interface QuestionStudyStat {
+  studyCount: number;
+  lastStudiedAt?: string;
+}
+
 export interface SetProgress {
   sequentialIndex: number;
   randomOrder?: string[];
@@ -33,6 +38,8 @@ export interface SetProgress {
   reviewOrder?: string[];
   reviewIndex?: number;
   readiness?: Record<string, ReadinessLevel>;
+  questionStats?: Record<string, QuestionStudyStat>;
+  dailyStudyCounts?: Record<string, number>;
   lastStudiedAt?: string;
 }
 
