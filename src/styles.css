@@ -143,34 +143,47 @@ p {
   border: 0;
 }
 
-.ratioSelector legend {
+.ratioSelector legend,
+.typeSelector legend {
   margin-bottom: 0.55rem;
   color: var(--muted);
   font-weight: 800;
 }
 
-.ratioOptions {
+.ratioOptions,
+.typeOptions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
 }
 
-.ratioButton {
+.ratioButton,
+.typeButton {
   min-height: 40px;
   padding: 0.55rem 0.78rem;
 }
 
-.ratioButton.active {
+.ratioButton.active,
+.typeButton.active {
   background: var(--primary);
-  color: #fff;
+  color: #050505;
   border-color: var(--primary);
 }
 
-.ratioSelector.compact {
+.typeSelector {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ratioSelector.compact,
+.typeSelector.compact {
   margin: 0.65rem 0 1rem;
 }
 
-.ratioSelector.compact legend {
+.ratioSelector.compact legend,
+.typeSelector.compact legend {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -189,7 +202,6 @@ p {
 }
 
 .setCard,
-.keySentenceCard,
 .answerCard,
 .previewPanel,
 .sampleBox {
@@ -303,6 +315,27 @@ p {
   line-height: 1.55;
 }
 
+.previewMeta {
+  display: inline-flex;
+  margin-bottom: 0.4rem;
+  color: var(--accent);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.previewParts {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0.6rem 0;
+}
+
+.previewParts span {
+  display: inline-flex;
+  margin-right: 0.45rem;
+  color: var(--accent);
+  font-weight: 900;
+}
+
 .errorText {
   color: var(--danger);
   font-weight: 800;
@@ -368,6 +401,28 @@ p {
   padding: clamp(0.65rem, 2vw, 1.2rem) 0 clamp(1rem, 2vw, 1.6rem);
 }
 
+.questionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+}
+
+.structureBadge {
+  display: inline-flex;
+  margin-bottom: 0.65rem;
+  color: var(--primary);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.structureLine {
+  margin: -0.25rem 0 0.75rem;
+  color: var(--muted);
+  font-size: clamp(0.86rem, 0.8rem + 0.3vw, 1rem);
+  font-weight: 800;
+}
+
 .questionCard h1 {
   margin: 0;
   font-size: clamp(2rem, 5.5vw, 4.2rem);
@@ -405,28 +460,30 @@ p {
   padding-bottom: calc(12.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-.keySentenceCard,
 .answerCard {
   padding: clamp(0.8rem, 1.8vw, 1.25rem);
 }
 
-.keySentenceCard {
-  background: transparent;
-}
-
-.keySentenceCard h2,
 .answerCard h2 {
   margin-bottom: 0.6rem;
   color: var(--muted);
   font-size: 0.95rem;
 }
 
-.keySentenceCard p {
-  margin-bottom: 0;
-  font-size: 1.16rem;
-  line-height: 1.65;
-  font-weight: 800;
-  color: var(--text);
+.answerParts {
+  display: grid;
+  gap: clamp(0.9rem, 1.5vw, 1.25rem);
+}
+
+.answerPart {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.answerPartLabel {
+  color: var(--accent);
+  font-size: clamp(0.92rem, 0.84rem + 0.25vw, 1rem);
+  font-weight: 900;
 }
 
 .clozeAnswer {

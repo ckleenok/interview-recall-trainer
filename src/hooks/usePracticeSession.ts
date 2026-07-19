@@ -1,5 +1,5 @@
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
-import type { AppStorage, PracticeMode, QuestionSet } from "../types/interview";
+import type { AppStorage, PracticeMode, QuestionSet, QuestionTypeFilter } from "../types/interview";
 import { type ClozeTarget, pickHiddenAnswerTargets } from "../utils/createClozeSegments";
 import { saveLastSession, saveStorage } from "../utils/storage";
 import { shuffle } from "../utils/shuffle";
@@ -10,53 +10,77 @@ interface UsePracticeSessionOptions {
   questionSet: QuestionSet;
   mode: PracticeMode;
   start: "resume" | "new";
+  questionTypeFilter: QuestionTypeFilter;
 }
 
-export function usePracticeSession({ storage, setStorage, questionSet, mode, start }: UsePracticeSessionOptions) {
+export function usePracticeSession({
+  storage,
+  setStorage,
+  questionSet,
+  mode,
+  start,
+  questionTypeFilter,
+}: UsePracticeSessionOptions) {
   const progress = storage.progress[questionSet.id] ?? { sequentialIndex: 0 };
   const lowReadinessIds = new Set(
     Object.entries(progress.readiness ?? {})
       .filter(([, readiness]) => readiness <= 2)
       .map(([questionId]) => questionId),
   );
-  const questions = questionSet.questions;
+  const questions =
+    questionTypeFilter === "all"
+      ? questionSet.questions
+      : questionSet.questions.filter((question) => question.questionType === questionTypeFilter);
   const reviewQuestions = questions.filter((question) => lowReadinessIds.has(question.id));
+  const questionIds = new Set(questions.map((question) => question.id));
 
   function getInitialOrder() {
     if (mode === "review") {
       if (start === "resume" && progress.reviewOrder?.length) {
-        return progress.reviewOrder.filter((questionId) => questions.some((question) => question.id === questionId));
+        return progress.reviewOrder.filter((questionId) => questionIds.has(questionId));
       }
       return reviewQuestions.map((question) => question.id);
     }
     if (mode === "sequential") return questions.map((question) => question.id);
-    if (start === "resume" && progress.randomOrder?.length === questions.length) return progress.randomOrder;
+    if (
+      start === "resume" &&
+      progress.randomOrder?.length === questions.length &&
+      progress.randomOrder.every((questionId) => questionIds.has(questionId))
+    ) {
+      return progress.randomOrder;
+    }
     return shuffle(questions.map((question) => question.id));
   }
 
   function getInitialIndex() {
     if (start === "new") return 0;
-    if (mode === "review") return Math.min(progress.reviewIndex ?? 0, Math.max(questions.length - 1, 0));
-    if (mode === "random") return Math.min(progress.randomIndex ?? 0, Math.max(questions.length - 1, 0));
-    return Math.min(progress.sequentialIndex ?? 0, Math.max(questions.length - 1, 0));
+    const maxIndex = Math.max(getInitialOrder().length - 1, 0);
+    if (mode === "review") return Math.min(progress.reviewIndex ?? 0, maxIndex);
+    if (mode === "random") return Math.min(progress.randomIndex ?? 0, maxIndex);
+    return Math.min(progress.sequentialIndex ?? 0, maxIndex);
   }
 
   const [order, setOrder] = useState(getInitialOrder);
   const [index, setIndex] = useState(getInitialIndex);
   const [sessionComplete, setSessionComplete] = useState(false);
-  const [hiddenTargets, setHiddenTargets] = useState<ClozeTarget[]>([]);
+  const [hiddenTargetsByPart, setHiddenTargetsByPart] = useState<ClozeTarget[][]>([]);
 
   const currentQuestion = questions.find((question) => question.id === order[index]) ?? questions[0];
 
   useEffect(() => {
-    setHiddenTargets(
-      pickHiddenAnswerTargets(
-        currentQuestion?.answer ?? "",
-        currentQuestion?.keywords ?? [],
-        storage.settings.blankRatio,
-      ),
+    const nextOrder = getInitialOrder();
+    setOrder(nextOrder);
+    setIndex(Math.min(getInitialIndex(), Math.max(nextOrder.length - 1, 0)));
+    setSessionComplete(false);
+  }, [mode, questionSet.id, questionTypeFilter]);
+
+  useEffect(() => {
+    setHiddenTargetsByPart(
+      currentQuestion?.answerParts.map((part) =>
+        pickHiddenAnswerTargets(part.text, currentQuestion.keywords, storage.settings.blankRatio),
+      ) ?? [],
     );
-  }, [currentQuestion?.answer, currentQuestion?.id, currentQuestion?.keywords, storage.settings.blankRatio]);
+  }, [currentQuestion?.answerParts, currentQuestion?.id, currentQuestion?.keywords, storage.settings.blankRatio]);
 
   useEffect(() => {
     if (!currentQuestion) return;
@@ -129,7 +153,7 @@ export function usePracticeSession({ storage, setStorage, questionSet, mode, sta
   }
 
   function restartReview() {
-    const nextOrder = questions.map((question) => question.id);
+    const nextOrder = reviewQuestions.map((question) => question.id);
     persistProgress(0, nextOrder);
     setOrder(nextOrder);
     setIndex(0);
@@ -140,7 +164,7 @@ export function usePracticeSession({ storage, setStorage, questionSet, mode, sta
     currentQuestion,
     currentNumber: index + 1,
     total: order.length,
-    hiddenTargets,
+    hiddenTargetsByPart,
     hasPrevious: index > 0,
     isLast: index >= order.length - 1,
     sessionComplete,

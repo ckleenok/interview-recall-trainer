@@ -2,10 +2,10 @@ import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } 
 import { BlankRatioSelector } from "../components/BlankRatioSelector";
 import { ClozeAnswer } from "../components/ClozeAnswer";
 import { Countdown } from "../components/Countdown";
-import { KeySentenceCard } from "../components/KeySentenceCard";
 import { QuestionCard } from "../components/QuestionCard";
+import { QuestionTypeSelector } from "../components/QuestionTypeSelector";
 import { usePracticeSession } from "../hooks/usePracticeSession";
-import type { AppStorage, PracticeMode, QuestionSet, ReadinessLevel } from "../types/interview";
+import type { AppStorage, PracticeMode, QuestionSet, QuestionTypeFilter, ReadinessLevel } from "../types/interview";
 import { CompletionPage } from "./CompletionPage";
 
 interface PracticePageProps {
@@ -23,7 +23,14 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
   const [showControls, setShowControls] = useState(false);
   const [revealToken, setRevealToken] = useState(0);
   const [hideToken, setHideToken] = useState(0);
-  const session = usePracticeSession({ storage, setStorage, questionSet, mode, start });
+  const session = usePracticeSession({
+    storage,
+    setStorage,
+    questionSet,
+    mode,
+    start,
+    questionTypeFilter: storage.settings.questionTypeFilter,
+  });
 
   const completeCountdown = useCallback(() => setShowAnswer(true), []);
 
@@ -43,12 +50,12 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     }));
   }
 
-  function updateKeySentenceVisibility(showKeySentence: boolean) {
+  function updateQuestionTypeFilter(questionTypeFilter: QuestionTypeFilter) {
     setStorage((previous) => ({
       ...previous,
       settings: {
         ...previous.settings,
-        showKeySentence,
+        questionTypeFilter,
       },
     }));
   }
@@ -155,23 +162,27 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
             </span>
             <span>{mode === "random" ? "랜덤" : mode === "review" ? "복습" : "순차"}</span>
             <span>빈칸 {storage.settings.blankRatio}%</span>
+            <span>
+              유형 {storage.settings.questionTypeFilter === "all" ? "전체" : storage.settings.questionTypeFilter.toUpperCase()}
+            </span>
           </div>
           <BlankRatioSelector compact value={storage.settings.blankRatio} onChange={updateRatio} />
-          <label className="toggleField">
-            <input
-              type="checkbox"
-              checked={storage.settings.showKeySentence ?? true}
-              onChange={(event) => updateKeySentenceVisibility(event.target.checked)}
-            />
-            <span>핵심 문장 보여주기</span>
-          </label>
+          <QuestionTypeSelector
+            compact
+            value={storage.settings.questionTypeFilter}
+            onChange={updateQuestionTypeFilter}
+          />
           <button className="ghost" type="button" onClick={onHome}>
             홈으로 이동
           </button>
         </section>
       ) : null}
 
-      <QuestionCard category={session.currentQuestion.category} question={session.currentQuestion.question} />
+      <QuestionCard
+        category={session.currentQuestion.category}
+        questionType={session.currentQuestion.questionType}
+        question={session.currentQuestion.question}
+      />
 
       {!showAnswer ? (
         <section className="thinkingPanel" aria-label="생각 시간">
@@ -182,12 +193,9 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
         </section>
       ) : (
         <div className="answerStack">
-          {storage.settings.showKeySentence ?? true ? (
-            <KeySentenceCard sentence={session.currentQuestion.keySentence} />
-          ) : null}
           <ClozeAnswer
-            answer={session.currentQuestion.answer}
-            hiddenTargets={session.hiddenTargets}
+            answerParts={session.currentQuestion.answerParts}
+            hiddenTargetsByPart={session.hiddenTargetsByPart}
             blankRatio={storage.settings.blankRatio}
             revealToken={revealToken}
             hideToken={hideToken}

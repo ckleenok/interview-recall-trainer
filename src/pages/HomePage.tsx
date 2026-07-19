@@ -1,7 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 import { BlankRatioSelector } from "../components/BlankRatioSelector";
+import { QuestionTypeSelector } from "../components/QuestionTypeSelector";
 import { SetCard } from "../components/SetCard";
-import type { AppStorage, PracticeMode } from "../types/interview";
+import type { AppStorage, PracticeMode, QuestionTypeFilter } from "../types/interview";
 
 interface HomePageProps {
   storage: AppStorage;
@@ -17,6 +18,16 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
       settings: {
         ...previous.settings,
         blankRatio,
+      },
+    }));
+  }
+
+  function updateQuestionTypeFilter(questionTypeFilter: QuestionTypeFilter) {
+    setStorage((previous) => ({
+      ...previous,
+      settings: {
+        ...previous.settings,
+        questionTypeFilter,
       },
     }));
   }
@@ -48,6 +59,10 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
 
       <section className="toolbar" aria-label="연습 설정">
         <BlankRatioSelector value={storage.settings.blankRatio} onChange={updateBlankRatio} />
+        <QuestionTypeSelector
+          value={storage.settings.questionTypeFilter}
+          onChange={updateQuestionTypeFilter}
+        />
         <button className="primary" type="button" onClick={onImport}>
           새 세트 붙여넣기
         </button>
@@ -60,6 +75,7 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
             key={questionSet.id}
             questionSet={questionSet}
             progress={storage.progress[questionSet.id]}
+            questionTypeFilter={storage.settings.questionTypeFilter}
             onStart={(mode, start) => onStart(questionSet.id, mode, start)}
             onDelete={questionSet.id === "default-pusan-ai" ? undefined : () => deleteSet(questionSet.id)}
           />

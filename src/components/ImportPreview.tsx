@@ -1,4 +1,5 @@
 import type { ParsedQuestionPreview } from "../types/interview";
+import { QUESTION_STRUCTURES } from "../utils/questionStructure";
 
 interface ImportPreviewProps {
   previews: ParsedQuestionPreview[];
@@ -16,10 +17,21 @@ export function ImportPreview({ previews }: ImportPreviewProps) {
       <div className="previewList">
         {previews.map((preview, index) => (
           <article className="previewItem" key={`${preview.question.id}-${index}`}>
+            <span className="previewMeta">
+              {QUESTION_STRUCTURES[preview.question.questionType].displayType} ·{" "}
+              {QUESTION_STRUCTURES[preview.question.questionType].code}
+            </span>
             <strong>
               {index + 1}. {preview.question.question || "질문 없음"}
             </strong>
-            <p>{preview.question.keySentence || "핵심 문장 없음"}</p>
+            <div className="previewParts">
+              {preview.question.answerParts.map((part) => (
+                <p key={part.label}>
+                  <span>{part.label}</span>
+                  {part.text || "내용 없음"}
+                </p>
+              ))}
+            </div>
             <span>키워드 {preview.question.keywords.length}개</span>
             {preview.errors.map((error) => (
               <p className="errorText" key={error}>

@@ -1,12 +1,19 @@
 export type PracticeMode = "sequential" | "random" | "review";
+export type QuestionType = "why" | "what" | "how";
+export type QuestionTypeFilter = "all" | QuestionType;
 export type ReadinessLevel = 1 | 2 | 3 | 4 | 5;
+
+export interface StructuredAnswerPart {
+  label: string;
+  text: string;
+}
 
 export interface InterviewQuestion {
   id: string;
   category: string;
+  questionType: QuestionType;
   question: string;
-  keySentence: string;
-  answer: string;
+  answerParts: StructuredAnswerPart[];
   keywords: string[];
 }
 
@@ -29,11 +36,11 @@ export interface SetProgress {
 }
 
 export interface AppStorage {
-  version: 1;
+  version: 2;
   sets: QuestionSet[];
   settings: {
     blankRatio: number;
-    showKeySentence?: boolean;
+    questionTypeFilter: QuestionTypeFilter;
     lastSetId?: string;
     lastMode?: PracticeMode;
   };
