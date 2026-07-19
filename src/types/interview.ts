@@ -1,6 +1,7 @@
 export type PracticeMode = "sequential" | "random" | "review";
 export type QuestionType = "why" | "what" | "how";
 export type QuestionTypeFilter = "all" | QuestionType;
+export type AnswerDisplayMode = "cloze" | "structure";
 export type ReadinessLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface StructuredAnswerPart {
@@ -40,6 +41,7 @@ export interface AppStorage {
   sets: QuestionSet[];
   settings: {
     blankRatio: number;
+    answerDisplayMode: AnswerDisplayMode;
     questionTypeFilter: QuestionTypeFilter;
     lastSetId?: string;
     lastMode?: PracticeMode;

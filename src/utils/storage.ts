@@ -1,6 +1,7 @@
 import { DEFAULT_SET_UPDATED_AT, defaultSet } from "../data/defaultSet";
 import type {
   AppStorage,
+  AnswerDisplayMode,
   InterviewQuestion,
   PracticeMode,
   QuestionSet,
@@ -17,6 +18,7 @@ export function createInitialStorage(): AppStorage {
     sets: [defaultSet],
     settings: {
       blankRatio: 40,
+      answerDisplayMode: "cloze",
       questionTypeFilter: "all",
       lastSetId: defaultSet.id,
       lastMode: "sequential",
@@ -41,6 +43,7 @@ type LegacyStorage = Partial<Omit<AppStorage, "version" | "sets" | "progress">> 
   progress?: Record<string, Partial<SetProgress>>;
   settings?: {
     blankRatio?: number;
+    answerDisplayMode?: AnswerDisplayMode;
     showKeySentence?: boolean;
     questionTypeFilter?: string;
     lastSetId?: string;
@@ -111,6 +114,7 @@ function migrateStorage(storage: LegacyStorage): AppStorage {
     sets: (storage.sets ?? []).map(migrateSet),
     settings: {
       blankRatio: storage.settings?.blankRatio ?? 40,
+      answerDisplayMode: storage.settings?.answerDisplayMode === "structure" ? "structure" : "cloze",
       questionTypeFilter: normalizeQuestionTypeFilter(storage.settings?.questionTypeFilter),
       lastSetId: storage.settings?.lastSetId,
       lastMode: storage.settings?.lastMode,
@@ -161,6 +165,7 @@ export function loadStorage(): AppStorage {
       ...migrated,
       settings: {
         blankRatio: migrated.settings.blankRatio,
+        answerDisplayMode: migrated.settings.answerDisplayMode,
         questionTypeFilter: migrated.settings.questionTypeFilter,
         lastSetId: migrated.settings.lastSetId,
         lastMode: migrated.settings.lastMode,

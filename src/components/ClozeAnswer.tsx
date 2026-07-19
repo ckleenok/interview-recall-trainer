@@ -6,6 +6,7 @@ interface ClozeAnswerProps {
   answerParts: StructuredAnswerPart[];
   hiddenTargetsByPart: ClozeTarget[][];
   blankRatio: number;
+  structureOnly: boolean;
   revealToken: number;
   hideToken: number;
 }
@@ -14,6 +15,7 @@ export function ClozeAnswer({
   answerParts,
   hiddenTargetsByPart,
   blankRatio,
+  structureOnly,
   revealToken,
   hideToken,
 }: ClozeAnswerProps) {
@@ -38,7 +40,7 @@ export function ClozeAnswer({
 
   useEffect(() => {
     setRevealed(new Set());
-  }, [answerParts, blankRatio, hiddenTargetsByPart]);
+  }, [answerParts, blankRatio, hiddenTargetsByPart, structureOnly]);
 
   useEffect(() => {
     setRevealed(new Set(allKeys));
@@ -63,35 +65,41 @@ export function ClozeAnswer({
       <div className="answerParts">
         {segmentedParts.map((part, partIndex) => (
           <section className="answerPart" key={`${part.label}-${partIndex}`}>
-            <span className="answerPartLabel">{part.label}</span>
-            <p className="clozeAnswer">
-              {part.segments.map((segment) => {
-                if (segment.type === "text") {
-                  return <span key={segment.key}>{segment.text}</span>;
-                }
-                const key = `${partIndex}-${segment.key}`;
-                const isRevealed = revealed.has(key);
-                return (
-                  <button
-                    className={isRevealed ? "blankButton revealed" : "blankButton"}
-                    key={key}
-                    type="button"
-                    onClick={() => toggle(key)}
-                    aria-label={isRevealed ? `${segment.keyword} 다시 가리기` : "빈칸 확인"}
-                  >
-                    {isRevealed ? (
-                      segment.keyword
-                    ) : (
-                      <span className="blankPlaceholder">
-                        <span className="blankSizer" aria-hidden="true">
-                          {segment.keyword}
-                        </span>
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </p>
+            {structureOnly ? (
+              <p className="structureOnlyLine">{part.label} :</p>
+            ) : (
+              <>
+                <span className="answerPartLabel">{part.label}</span>
+                <p className="clozeAnswer">
+                  {part.segments.map((segment) => {
+                    if (segment.type === "text") {
+                      return <span key={segment.key}>{segment.text}</span>;
+                    }
+                    const key = `${partIndex}-${segment.key}`;
+                    const isRevealed = revealed.has(key);
+                    return (
+                      <button
+                        className={isRevealed ? "blankButton revealed" : "blankButton"}
+                        key={key}
+                        type="button"
+                        onClick={() => toggle(key)}
+                        aria-label={isRevealed ? `${segment.keyword} 다시 가리기` : "빈칸 확인"}
+                      >
+                        {isRevealed ? (
+                          segment.keyword
+                        ) : (
+                          <span className="blankPlaceholder">
+                            <span className="blankSizer" aria-hidden="true">
+                              {segment.keyword}
+                            </span>
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </p>
+              </>
+            )}
           </section>
         ))}
       </div>

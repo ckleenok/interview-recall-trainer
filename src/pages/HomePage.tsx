@@ -18,6 +18,17 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
       settings: {
         ...previous.settings,
         blankRatio,
+        answerDisplayMode: "cloze",
+      },
+    }));
+  }
+
+  function updateStructureOnly() {
+    setStorage((previous) => ({
+      ...previous,
+      settings: {
+        ...previous.settings,
+        answerDisplayMode: "structure",
       },
     }));
   }
@@ -58,7 +69,12 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
       </header>
 
       <section className="toolbar" aria-label="연습 설정">
-        <BlankRatioSelector value={storage.settings.blankRatio} onChange={updateBlankRatio} />
+        <BlankRatioSelector
+          value={storage.settings.blankRatio}
+          displayMode={storage.settings.answerDisplayMode}
+          onChange={updateBlankRatio}
+          onStructureOnly={updateStructureOnly}
+        />
         <QuestionTypeSelector
           value={storage.settings.questionTypeFilter}
           onChange={updateQuestionTypeFilter}

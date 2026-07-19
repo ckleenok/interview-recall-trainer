@@ -46,6 +46,17 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
       settings: {
         ...previous.settings,
         blankRatio,
+        answerDisplayMode: "cloze",
+      },
+    }));
+  }
+
+  function updateStructureOnly() {
+    setStorage((previous) => ({
+      ...previous,
+      settings: {
+        ...previous.settings,
+        answerDisplayMode: "structure",
       },
     }));
   }
@@ -161,12 +172,22 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
               {session.currentNumber}/{session.total}
             </span>
             <span>{mode === "random" ? "랜덤" : mode === "review" ? "복습" : "순차"}</span>
-            <span>빈칸 {storage.settings.blankRatio}%</span>
+            <span>
+              {storage.settings.answerDisplayMode === "structure"
+                ? "구조만"
+                : `빈칸 ${storage.settings.blankRatio}%`}
+            </span>
             <span>
               유형 {storage.settings.questionTypeFilter === "all" ? "전체" : storage.settings.questionTypeFilter.toUpperCase()}
             </span>
           </div>
-          <BlankRatioSelector compact value={storage.settings.blankRatio} onChange={updateRatio} />
+          <BlankRatioSelector
+            compact
+            value={storage.settings.blankRatio}
+            displayMode={storage.settings.answerDisplayMode}
+            onChange={updateRatio}
+            onStructureOnly={updateStructureOnly}
+          />
           <QuestionTypeSelector
             compact
             value={storage.settings.questionTypeFilter}
@@ -197,6 +218,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
             answerParts={session.currentQuestion.answerParts}
             hiddenTargetsByPart={session.hiddenTargetsByPart}
             blankRatio={storage.settings.blankRatio}
+            structureOnly={storage.settings.answerDisplayMode === "structure"}
             revealToken={revealToken}
             hideToken={hideToken}
           />
