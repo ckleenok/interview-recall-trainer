@@ -227,14 +227,6 @@ p {
   line-height: 1.5;
 }
 
-.dailyStudyStrip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.6rem;
-}
-
-.dailyStudyStrip span,
 .studyBadge {
   display: inline-flex;
   min-height: 28px;
@@ -246,6 +238,85 @@ p {
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 900;
+}
+
+.studyChart {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  max-width: 620px;
+}
+
+.studyChartDay {
+  display: grid;
+  grid-template-rows: auto 64px auto auto;
+  gap: 0.3rem;
+  min-width: 0;
+  align-items: end;
+  justify-items: center;
+}
+
+.studyChartLabel,
+.studyChartValue {
+  width: 100%;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studyBars {
+  display: flex;
+  width: 100%;
+  height: 64px;
+  align-items: end;
+  justify-content: center;
+  gap: 0.22rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.studyBar {
+  display: block;
+  width: min(34%, 14px);
+  min-width: 7px;
+  border-radius: 3px 3px 0 0;
+}
+
+.countBar,
+.legendCount {
+  background: #d0d0d0;
+}
+
+.timeBar,
+.legendTime {
+  background: #7f8f8a;
+}
+
+.studyChartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.55rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.studyChartLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.studyChartLegend i {
+  display: inline-flex;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
 }
 
 .setActions,

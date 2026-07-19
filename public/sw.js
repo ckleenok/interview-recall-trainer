@@ -1,4 +1,4 @@
-const CACHE_NAME = "interview-recall-trainer-v6";
+const CACHE_NAME = "interview-recall-trainer-v7";
 const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest", "/icons/icon-192.svg", "/icons/icon-512.svg"];
 
 self.addEventListener("install", (event) => {

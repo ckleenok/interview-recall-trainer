@@ -9,6 +9,9 @@ import type { AppStorage, PracticeMode, QuestionSet, QuestionTypeFilter, Readine
 import { getReviewInfo, getStudyCount, toLocalDateKey } from "../utils/studySchedule";
 import { CompletionPage } from "./CompletionPage";
 
+const ACTIVE_STUDY_IDLE_LIMIT_MS = 2 * 60 * 1000;
+const STUDY_TIMER_TICK_MS = 5000;
+
 interface PracticePageProps {
   storage: AppStorage;
   setStorage: Dispatch<SetStateAction<AppStorage>>;
@@ -25,6 +28,8 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
   const [revealToken, setRevealToken] = useState(0);
   const [hideToken, setHideToken] = useState(0);
   const recordedQuestionRef = useRef<string | null>(null);
+  const lastInteractionRef = useRef(Date.now());
+  const lastStudyTickRef = useRef(Date.now());
   const session = usePracticeSession({
     storage,
     setStorage,
@@ -49,6 +54,44 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
     recordedQuestionRef.current = questionId;
     recordCurrentStudy(questionId);
   }, [showAnswer, session.currentQuestion?.id]);
+
+  useEffect(() => {
+    function markInteraction() {
+      lastInteractionRef.current = Date.now();
+    }
+
+    function resetTick() {
+      lastStudyTickRef.current = Date.now();
+      markInteraction();
+    }
+
+    const activityEvents = ["pointerdown", "keydown", "wheel", "touchstart", "click"];
+    activityEvents.forEach((eventName) => window.addEventListener(eventName, markInteraction, { passive: true }));
+    window.addEventListener("focus", resetTick);
+    window.addEventListener("blur", resetTick);
+    document.addEventListener("visibilitychange", resetTick);
+
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - lastStudyTickRef.current) / 1000);
+      const isActive =
+        document.visibilityState === "visible" &&
+        document.hasFocus() &&
+        now - lastInteractionRef.current <= ACTIVE_STUDY_IDLE_LIMIT_MS;
+
+      lastStudyTickRef.current = now;
+      if (!isActive || elapsedSeconds <= 0) return;
+      recordStudySeconds(Math.min(elapsedSeconds, STUDY_TIMER_TICK_MS / 1000 + 1));
+    }, STUDY_TIMER_TICK_MS);
+
+    return () => {
+      window.clearInterval(timer);
+      activityEvents.forEach((eventName) => window.removeEventListener(eventName, markInteraction));
+      window.removeEventListener("focus", resetTick);
+      window.removeEventListener("blur", resetTick);
+      document.removeEventListener("visibilitychange", resetTick);
+    };
+  }, [questionSet.id]);
 
   function updateRatio(blankRatio: number) {
     setStorage((previous) => ({
@@ -128,6 +171,27 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
               [dateKey]: (previousProgress.dailyStudyCounts?.[dateKey] ?? 0) + 1,
             },
             lastStudiedAt: nowIso,
+          },
+        },
+      };
+    });
+  }
+
+  function recordStudySeconds(seconds: number) {
+    if (seconds <= 0) return;
+    const dateKey = toLocalDateKey(new Date());
+    setStorage((previous) => {
+      const previousProgress = previous.progress[questionSet.id] ?? { sequentialIndex: 0 };
+      return {
+        ...previous,
+        progress: {
+          ...previous.progress,
+          [questionSet.id]: {
+            ...previousProgress,
+            dailyStudySeconds: {
+              ...(previousProgress.dailyStudySeconds ?? {}),
+              [dateKey]: (previousProgress.dailyStudySeconds?.[dateKey] ?? 0) + seconds,
+            },
           },
         },
       };

@@ -104,6 +104,7 @@ function migrateProgress(progress?: Record<string, Partial<SetProgress>>): Recor
       readiness: value.readiness as Record<string, ReadinessLevel> | undefined,
       questionStats: value.questionStats,
       dailyStudyCounts: value.dailyStudyCounts,
+      dailyStudySeconds: value.dailyStudySeconds,
       lastStudiedAt: value.lastStudiedAt,
     };
   }

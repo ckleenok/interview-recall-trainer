@@ -1,6 +1,13 @@
 import type { PracticeMode, QuestionSet, QuestionType, QuestionTypeFilter, SetProgress } from "../types/interview";
 import { QUESTION_STRUCTURES } from "../utils/questionStructure";
-import { getRecentStudyTotal, getStudyCount, isDueForReview, toLocalDateKey } from "../utils/studySchedule";
+import {
+  formatStudyDuration,
+  getRecentStudySeconds,
+  getRecentStudyTotal,
+  getStudyCount,
+  isDueForReview,
+  toLocalDateKey,
+} from "../utils/studySchedule";
 
 interface SetCardProps {
   questionSet: QuestionSet;
@@ -23,9 +30,10 @@ function formatShortDate(date: Date): string {
   return new Intl.DateTimeFormat("ko-KR", { month: "numeric", day: "numeric" }).format(date);
 }
 
-function getDailyItems(progress?: SetProgress): Array<{ date: string; label: string; count: number }> {
+function getDailyItems(progress?: SetProgress): Array<{ date: string; label: string; count: number; seconds: number }> {
   const today = new Date();
-  return Array.from({ length: 7 }, (_, offset) => {
+  return Array.from({ length: 7 }, (_, index) => {
+    const offset = 6 - index;
     const date = new Date(today);
     date.setDate(today.getDate() - offset);
     const key = toLocalDateKey(date);
@@ -33,6 +41,7 @@ function getDailyItems(progress?: SetProgress): Array<{ date: string; label: str
       date: key,
       label: offset === 0 ? "오늘" : formatShortDate(date),
       count: progress?.dailyStudyCounts?.[key] ?? 0,
+      seconds: progress?.dailyStudySeconds?.[key] ?? 0,
     };
   });
 }
@@ -59,7 +68,11 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
   const totalStudyCount = Object.values(progress?.questionStats ?? {}).reduce((sum, stat) => sum + stat.studyCount, 0);
   const todayStudyCount = getRecentStudyTotal(progress, 1);
   const weekStudyCount = getRecentStudyTotal(progress, 7);
+  const todayStudySeconds = getRecentStudySeconds(progress, 1);
+  const weekStudySeconds = getRecentStudySeconds(progress, 7);
   const dailyItems = getDailyItems(progress);
+  const maxDailyCount = Math.max(1, ...dailyItems.map((item) => item.count));
+  const maxDailySeconds = Math.max(1, ...dailyItems.map((item) => item.seconds));
   const selectedCountText =
     questionTypeFilter === "all"
       ? "전체 유형"
@@ -81,14 +94,33 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
           {` · 낮은 readiness ${lowReadinessCount}개`}
         </p>
         <p>
-          누적 학습 {totalStudyCount}회 · 오늘 {todayStudyCount}문항 · 최근 7일 {weekStudyCount}문항 · 오늘 복습 {dueReviewCount}개
+          누적 학습 {totalStudyCount}회 · 오늘 {todayStudyCount}문항/{formatStudyDuration(todayStudySeconds)} · 최근 7일{" "}
+          {weekStudyCount}문항/{formatStudyDuration(weekStudySeconds)} · 오늘 복습 {dueReviewCount}개
         </p>
-        <div className="dailyStudyStrip" aria-label="최근 7일 학습 문제수">
+        <div className="studyChart" aria-label="지난 7일 일자별 학습 문항수와 학습 시간">
           {dailyItems.map((item) => (
-            <span key={item.date}>
-              {item.label} {item.count}
-            </span>
+            <div className="studyChartDay" key={item.date}>
+              <span className="studyChartLabel">{item.label}</span>
+              <div className="studyBars">
+                <span
+                  className="studyBar countBar"
+                  style={{ height: `${Math.max(6, (item.count / maxDailyCount) * 58)}px` }}
+                  title={`${item.label} ${item.count}문항`}
+                />
+                <span
+                  className="studyBar timeBar"
+                  style={{ height: `${Math.max(6, (item.seconds / maxDailySeconds) * 58)}px` }}
+                  title={`${item.label} ${formatStudyDuration(item.seconds)}`}
+                />
+              </div>
+              <span className="studyChartValue">{item.count}문항</span>
+              <span className="studyChartValue">{formatStudyDuration(item.seconds)}</span>
+            </div>
           ))}
+        </div>
+        <div className="studyChartLegend" aria-hidden="true">
+          <span><i className="legendCount" />문항수</span>
+          <span><i className="legendTime" />학습시간</span>
         </div>
       </div>
       <div className="setActions">

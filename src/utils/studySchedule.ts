@@ -93,3 +93,25 @@ export function getRecentStudyTotal(progress: SetProgress | undefined, days: num
 
   return total;
 }
+
+export function getRecentStudySeconds(progress: SetProgress | undefined, days: number, now = new Date()): number {
+  const seconds = progress?.dailyStudySeconds ?? {};
+  let total = 0;
+
+  for (let offset = 0; offset < days; offset += 1) {
+    const date = new Date(now);
+    date.setDate(now.getDate() - offset);
+    total += seconds[toLocalDateKey(date)] ?? 0;
+  }
+
+  return total;
+}
+
+export function formatStudyDuration(totalSeconds: number): string {
+  if (totalSeconds <= 0) return "0분";
+  if (totalSeconds < 60) return "<1분";
+  const minutes = Math.round(totalSeconds / 60);
+  if (minutes < 60) return `${minutes}분`;
+  const hours = minutes / 60;
+  return `${Number.isInteger(hours) ? hours.toFixed(0) : hours.toFixed(1)}시간`;
+}

@@ -40,6 +40,7 @@ export interface SetProgress {
   readiness?: Record<string, ReadinessLevel>;
   questionStats?: Record<string, QuestionStudyStat>;
   dailyStudyCounts?: Record<string, number>;
+  dailyStudySeconds?: Record<string, number>;
   lastStudiedAt?: string;
 }
 
