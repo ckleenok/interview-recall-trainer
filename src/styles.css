@@ -582,14 +582,6 @@ p {
   font-weight: 900;
 }
 
-.structureOnlyLine {
-  margin: 0;
-  color: var(--text);
-  font-size: clamp(1.45rem, 1.15rem + 0.9vw, 1.84rem);
-  line-height: 1.72;
-  font-weight: 900;
-}
-
 .clozeAnswer {
   margin-bottom: 0;
   white-space: pre-wrap;
