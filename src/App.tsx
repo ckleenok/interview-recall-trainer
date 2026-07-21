@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSyncedStorage } from "./hooks/useSyncedStorage";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import { HomePage } from "./pages/HomePage";
 import { ImportPage } from "./pages/ImportPage";
 import { PracticePage } from "./pages/PracticePage";
@@ -34,7 +34,7 @@ function routeToHash(route: Route): string {
 }
 
 export function App() {
-  const [storage, setStorage, sync] = useSyncedStorage();
+  const [storage, setStorage] = useLocalStorage();
   const [route, setRoute] = useState<Route>(() => parseRoute());
 
   useEffect(() => {
@@ -78,7 +78,6 @@ export function App() {
       setStorage={setStorage}
       onImport={() => navigate({ screen: "import" })}
       onStart={(setId, mode, start) => navigate({ screen: "practice", setId, mode, start })}
-      sync={sync}
     />
   );
 }
