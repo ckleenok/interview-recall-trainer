@@ -6,20 +6,11 @@ interface SyncPanelProps {
 }
 
 export function SyncPanel({ sync }: SyncPanelProps) {
-  const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!email.trim()) return;
+  async function refresh() {
     setBusy(true);
-    await sync.signIn(email.trim());
-    setBusy(false);
-  }
-
-  async function signOut() {
-    setBusy(true);
-    await sync.signOut();
+    await sync.pullNow();
     setBusy(false);
   }
 
@@ -30,27 +21,14 @@ export function SyncPanel({ sync }: SyncPanelProps) {
         <p className="syncMessage">{sync.message}</p>
       </div>
       {!sync.enabled ? (
-        <p className="syncHint">Supabase 환경 변수를 설정하면 여러 기기 동기화가 켜집니다.</p>
-      ) : sync.signedIn ? (
+        <p className="syncHint">Supabase 환경 변수를 설정하면 모든 기기에서 같은 progress를 봅니다.</p>
+      ) : (
         <div className="syncActions">
-          <span className="syncAccount">{sync.email}</span>
-          <button className="ghost" type="button" onClick={signOut} disabled={busy}>
-            로그아웃
+          <span className="syncAccount">공용 progress</span>
+          <button className="ghost" type="button" onClick={refresh} disabled={busy || sync.status === "loading"}>
+            새로고침
           </button>
         </div>
-      ) : (
-        <form className="syncForm" onSubmit={submit}>
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="email@example.com"
-            aria-label="로그인 이메일"
-          />
-          <button type="submit" disabled={busy || !email.trim()}>
-            이메일 로그인
-          </button>
-        </form>
       )}
     </section>
   );

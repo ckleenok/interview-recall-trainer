@@ -1,31 +1,32 @@
-create table if not exists public.interview_progress (
-  user_id uuid primary key references auth.users(id) on delete cascade,
+create table if not exists public.interview_shared_progress (
+  id text primary key,
   storage jsonb not null,
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  constraint interview_shared_progress_singleton check (id = 'global')
 );
 
-alter table public.interview_progress enable row level security;
+alter table public.interview_shared_progress enable row level security;
 
-drop policy if exists "interview progress select own row" on public.interview_progress;
-create policy "interview progress select own row"
-on public.interview_progress
+drop policy if exists "shared progress select global" on public.interview_shared_progress;
+create policy "shared progress select global"
+on public.interview_shared_progress
 for select
-to authenticated
-using ((select auth.uid()) = user_id);
+to anon, authenticated
+using (id = 'global');
 
-drop policy if exists "interview progress insert own row" on public.interview_progress;
-create policy "interview progress insert own row"
-on public.interview_progress
+drop policy if exists "shared progress insert global" on public.interview_shared_progress;
+create policy "shared progress insert global"
+on public.interview_shared_progress
 for insert
-to authenticated
-with check ((select auth.uid()) = user_id);
+to anon, authenticated
+with check (id = 'global');
 
-drop policy if exists "interview progress update own row" on public.interview_progress;
-create policy "interview progress update own row"
-on public.interview_progress
+drop policy if exists "shared progress update global" on public.interview_shared_progress;
+create policy "shared progress update global"
+on public.interview_shared_progress
 for update
-to authenticated
-using ((select auth.uid()) = user_id)
-with check ((select auth.uid()) = user_id);
+to anon, authenticated
+using (id = 'global')
+with check (id = 'global');
 
-grant select, insert, update on public.interview_progress to authenticated;
+grant select, insert, update on public.interview_shared_progress to anon, authenticated;
