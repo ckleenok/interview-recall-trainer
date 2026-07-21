@@ -2,16 +2,19 @@ import type { Dispatch, SetStateAction } from "react";
 import { BlankRatioSelector } from "../components/BlankRatioSelector";
 import { QuestionTypeSelector } from "../components/QuestionTypeSelector";
 import { SetCard } from "../components/SetCard";
+import { SyncPanel } from "../components/SyncPanel";
+import type { StorageSyncState } from "../hooks/useSyncedStorage";
 import type { AppStorage, PracticeMode, QuestionTypeFilter } from "../types/interview";
 
 interface HomePageProps {
   storage: AppStorage;
   setStorage: Dispatch<SetStateAction<AppStorage>>;
+  sync: StorageSyncState;
   onImport: () => void;
   onStart: (setId: string, mode: PracticeMode, start: "resume" | "new") => void;
 }
 
-export function HomePage({ storage, setStorage, onImport, onStart }: HomePageProps) {
+export function HomePage({ storage, setStorage, sync, onImport, onStart }: HomePageProps) {
   function updateBlankRatio(blankRatio: number) {
     setStorage((previous) => ({
       ...previous,
@@ -70,6 +73,8 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
           새 세트 붙여넣기
         </button>
       </section>
+
+      <SyncPanel sync={sync} />
 
       <section className="setList" aria-labelledby="set-list-title">
         <h2 id="set-list-title">질문 세트</h2>

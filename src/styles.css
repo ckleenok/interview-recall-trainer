@@ -136,6 +136,59 @@ p {
   margin: 1rem 0 2rem;
 }
 
+.syncPanel {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--surface);
+}
+
+.syncTitle {
+  margin-bottom: 0.25rem;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.syncMessage,
+.syncHint {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.syncForm,
+.syncActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.syncForm input {
+  min-width: min(100%, 260px);
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.72rem 0.8rem;
+  background: var(--surface-strong);
+  color: var(--text);
+}
+
+.syncAccount {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
 .ratioSelector {
   min-width: 0;
   margin: 0;
