@@ -35,14 +35,14 @@ function formatReadiness(readiness?: number): string {
 }
 
 function getQuestionDateCount(progress: SetProgress | undefined, questionId: string, dateKey: string): number {
-  const explicitCount = progress?.questionDailyStudyCounts?.[questionId]?.[dateKey];
-  if (explicitCount !== undefined) return explicitCount;
+  const dailyCounts = progress?.questionDailyStudyCounts?.[questionId];
+  if (dailyCounts) return dailyCounts[dateKey] ?? 0;
 
   const stat = progress?.questionStats?.[questionId];
   if (!stat?.lastStudiedAt) return 0;
   const lastStudiedDate = new Date(stat.lastStudiedAt);
   if (Number.isNaN(lastStudiedDate.getTime())) return 0;
-  return toLocalDateKey(lastStudiedDate) === dateKey ? Math.max(1, stat.studyCount) : 0;
+  return toLocalDateKey(lastStudiedDate) === dateKey ? 1 : 0;
 }
 
 export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter, onOpenQuestion }: QuestionStudyMatrixProps) {
