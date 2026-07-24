@@ -4,6 +4,7 @@ import {
   formatStudyDuration,
   getRecentStudySeconds,
   getRecentStudyTotal,
+  getReviewInfo,
   getStudyCount,
   isDueForReview,
   toLocalDateKey,
@@ -60,6 +61,7 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
   const dueReviewCount = filteredQuestions.filter(
     (question) => getStudyCount(progress, question.id) > 0 && isDueForReview(progress, question.id),
   ).length;
+  const spacedStudyCount = filteredQuestions.filter((question) => getReviewInfo(progress, question.id).due).length;
   const reviewCount = filteredQuestions.filter(
     (question) =>
       (getStudyCount(progress, question.id) > 0 && isDueForReview(progress, question.id)) ||
@@ -95,7 +97,7 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
         </p>
         <p>
           누적 학습 {totalStudyCount}회 · 오늘 {todayStudyCount}문항/{formatStudyDuration(todayStudySeconds)} · 최근 7일{" "}
-          {weekStudyCount}문항/{formatStudyDuration(weekStudySeconds)} · 오늘 복습 {dueReviewCount}개
+          {weekStudyCount}문항/{formatStudyDuration(weekStudySeconds)} · 오늘 복습 {dueReviewCount}개 · 망각곡선 {spacedStudyCount}개
         </p>
         <div className="studyChart" aria-label="지난 7일 일자별 학습 문항수와 학습 시간">
           {dailyItems.map((item) => (
@@ -132,6 +134,9 @@ export function SetCard({ questionSet, progress, questionTypeFilter, onStart, on
         </button>
         <button type="button" onClick={() => onStart("random", "new")} disabled={filteredQuestions.length === 0}>
           랜덤 연습
+        </button>
+        <button className="primary" type="button" onClick={() => onStart("spaced", "new")} disabled={spacedStudyCount === 0}>
+          망각곡선 학습
         </button>
         <button type="button" onClick={() => onStart("review", "new")} disabled={reviewCount === 0}>
           복습 필요

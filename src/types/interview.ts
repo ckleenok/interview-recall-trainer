@@ -1,4 +1,4 @@
-export type PracticeMode = "sequential" | "random" | "review";
+export type PracticeMode = "sequential" | "random" | "review" | "spaced";
 export type QuestionType = "why" | "what" | "how";
 export type QuestionTypeFilter = "all" | QuestionType;
 export type ReadinessLevel = 1 | 2 | 3 | 4 | 5;
@@ -36,6 +36,8 @@ export interface SetProgress {
   randomIndex?: number;
   reviewOrder?: string[];
   reviewIndex?: number;
+  spacedOrder?: string[];
+  spacedIndex?: number;
   readiness?: Record<string, ReadinessLevel>;
   questionStats?: Record<string, QuestionStudyStat>;
   questionDailyStudyCounts?: Record<string, Record<string, number>>;

@@ -234,6 +234,10 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
           session.restartReview();
           setShowAnswer(false);
         }}
+        onRestartSpaced={() => {
+          session.restartSpaced();
+          setShowAnswer(false);
+        }}
         onRestartSequential={() => {
           session.restartSequential();
           setShowAnswer(false);
@@ -245,7 +249,13 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
   if (!session.currentQuestion) {
     return (
       <main className="page">
-        <p>{mode === "review" ? "readiness가 낮은 질문이 없습니다." : "질문이 없습니다."}</p>
+        <p>
+          {mode === "review"
+            ? "readiness가 낮은 질문이 없습니다."
+            : mode === "spaced"
+              ? "오늘 망각곡선 학습 대상이 없습니다."
+              : "질문이 없습니다."}
+        </p>
         <button type="button" onClick={onHome}>
           홈
         </button>
@@ -279,7 +289,7 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
             <span>
               {session.currentNumber}/{session.total}
             </span>
-            <span>{mode === "random" ? "랜덤" : mode === "review" ? "복습" : "순차"}</span>
+            <span>{mode === "random" ? "랜덤" : mode === "review" ? "복습" : mode === "spaced" ? "망각곡선" : "순차"}</span>
             <span>빈칸 {storage.settings.blankRatio}%</span>
             <span>
               유형 {storage.settings.questionTypeFilter === "all" ? "전체" : storage.settings.questionTypeFilter.toUpperCase()}

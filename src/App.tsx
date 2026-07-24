@@ -19,7 +19,8 @@ function parseRoute(): Route {
   if (screen === "practice") {
     const setId = params.get("setId") ?? "";
     const modeParam = params.get("mode");
-    const mode: PracticeMode = modeParam === "random" || modeParam === "review" ? modeParam : "sequential";
+    const mode: PracticeMode =
+      modeParam === "random" || modeParam === "review" || modeParam === "spaced" ? modeParam : "sequential";
     const start = params.get("start") === "new" ? "new" : "resume";
     return { screen: "practice", setId, mode, start };
   }

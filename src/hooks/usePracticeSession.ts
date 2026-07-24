@@ -3,7 +3,7 @@ import type { AppStorage, PracticeMode, QuestionSet, QuestionTypeFilter } from "
 import { type ClozeTarget, pickHiddenAnswerTargets } from "../utils/createClozeSegments";
 import { saveLastSession, saveStorage } from "../utils/storage";
 import { shuffle } from "../utils/shuffle";
-import { getStudyCount, isDueForReview } from "../utils/studySchedule";
+import { getReviewInfo, getStudyCount, isDueForReview } from "../utils/studySchedule";
 
 interface UsePracticeSessionOptions {
   storage: AppStorage;
@@ -36,6 +36,22 @@ export function usePracticeSession({
     (question) =>
       lowReadinessIds.has(question.id) || (getStudyCount(progress, question.id) > 0 && isDueForReview(progress, question.id)),
   );
+  const spacedQuestions = questions
+    .map((question, originalIndex) => ({
+      question,
+      originalIndex,
+      reviewInfo: getReviewInfo(progress, question.id),
+      readiness: progress.readiness?.[question.id] ?? 3,
+    }))
+    .filter((item) => item.reviewInfo.due)
+    .sort((a, b) => {
+      const aOverdue = a.reviewInfo.daysSinceLastStudy === null ? -1 : a.reviewInfo.daysSinceLastStudy - a.reviewInfo.intervalDays;
+      const bOverdue = b.reviewInfo.daysSinceLastStudy === null ? -1 : b.reviewInfo.daysSinceLastStudy - b.reviewInfo.intervalDays;
+      if (bOverdue !== aOverdue) return bOverdue - aOverdue;
+      if (a.readiness !== b.readiness) return a.readiness - b.readiness;
+      return a.originalIndex - b.originalIndex;
+    })
+    .map((item) => item.question);
   const questionIds = new Set(questions.map((question) => question.id));
 
   function getInitialOrder() {
@@ -44,6 +60,12 @@ export function usePracticeSession({
         return progress.reviewOrder.filter((questionId) => questionIds.has(questionId));
       }
       return reviewQuestions.map((question) => question.id);
+    }
+    if (mode === "spaced") {
+      if (start === "resume" && progress.spacedOrder?.length) {
+        return progress.spacedOrder.filter((questionId) => questionIds.has(questionId));
+      }
+      return spacedQuestions.map((question) => question.id);
     }
     if (mode === "sequential") return questions.map((question) => question.id);
     if (
@@ -60,6 +82,7 @@ export function usePracticeSession({
     if (start === "new") return 0;
     const maxIndex = Math.max(getInitialOrder().length - 1, 0);
     if (mode === "review") return Math.min(progress.reviewIndex ?? 0, maxIndex);
+    if (mode === "spaced") return Math.min(progress.spacedIndex ?? 0, maxIndex);
     if (mode === "random") return Math.min(progress.randomIndex ?? 0, maxIndex);
     return Math.min(progress.sequentialIndex ?? 0, maxIndex);
   }
@@ -104,6 +127,9 @@ export function usePracticeSession({
       } else if (mode === "review") {
         nextProgress.reviewOrder = nextOrder;
         nextProgress.reviewIndex = nextIndex;
+      } else if (mode === "spaced") {
+        nextProgress.spacedOrder = nextOrder;
+        nextProgress.spacedIndex = nextIndex;
       } else {
         nextProgress.sequentialIndex = nextIndex;
       }
@@ -164,6 +190,14 @@ export function usePracticeSession({
     setSessionComplete(false);
   }
 
+  function restartSpaced() {
+    const nextOrder = spacedQuestions.map((question) => question.id);
+    persistProgress(0, nextOrder);
+    setOrder(nextOrder);
+    setIndex(0);
+    setSessionComplete(false);
+  }
+
   return {
     currentQuestion,
     currentNumber: index + 1,
@@ -177,5 +211,6 @@ export function usePracticeSession({
     restartRandom,
     restartSequential,
     restartReview,
+    restartSpaced,
   };
 }
