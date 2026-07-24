@@ -34,6 +34,17 @@ function formatReadiness(readiness?: number): string {
   return readiness ? `${readiness}` : "-";
 }
 
+function getQuestionDateCount(progress: SetProgress | undefined, questionId: string, dateKey: string): number {
+  const explicitCount = progress?.questionDailyStudyCounts?.[questionId]?.[dateKey];
+  if (explicitCount !== undefined) return explicitCount;
+
+  const stat = progress?.questionStats?.[questionId];
+  if (!stat?.lastStudiedAt) return 0;
+  const lastStudiedDate = new Date(stat.lastStudiedAt);
+  if (Number.isNaN(lastStudiedDate.getTime())) return 0;
+  return toLocalDateKey(lastStudiedDate) === dateKey ? Math.max(1, stat.studyCount) : 0;
+}
+
 export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter, onOpenQuestion }: QuestionStudyMatrixProps) {
   const questions =
     questionTypeFilter === "all"
@@ -43,7 +54,7 @@ export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter,
   const maxDailyQuestionCount = Math.max(
     1,
     ...questions.flatMap((question) =>
-      dateColumns.map((date) => progress?.questionDailyStudyCounts?.[question.id]?.[date.key] ?? 0),
+      dateColumns.map((date) => getQuestionDateCount(progress, question.id, date.key)),
     ),
   );
 
@@ -81,7 +92,7 @@ export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter,
                   <strong>{totalCount}회</strong>
                 </div>
                 {dateColumns.map((date) => {
-                  const count = progress?.questionDailyStudyCounts?.[question.id]?.[date.key] ?? 0;
+                  const count = getQuestionDateCount(progress, question.id, date.key);
                   const scale = count > 0 ? 0.78 + (count / maxDailyQuestionCount) * 0.22 : 1;
                   return (
                     <span className="studyMatrixCell" role="cell" key={date.key}>
