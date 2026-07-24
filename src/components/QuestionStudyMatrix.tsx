@@ -82,19 +82,17 @@ export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter,
                 </div>
                 {dateColumns.map((date) => {
                   const count = progress?.questionDailyStudyCounts?.[question.id]?.[date.key] ?? 0;
-                  const scale = count > 0 ? 0.62 + (count / maxDailyQuestionCount) * 0.38 : 0;
+                  const scale = count > 0 ? 0.78 + (count / maxDailyQuestionCount) * 0.22 : 1;
                   return (
                     <span className="studyMatrixCell" role="cell" key={date.key}>
-                      {count > 0 ? (
-                        <span
-                          className="studyDot"
-                          style={{ transform: `scale(${scale})`, opacity: 0.58 + (count / maxDailyQuestionCount) * 0.42 }}
-                          title={`Quiz ${questionNumber} · ${date.label} · ${count}회`}
-                          aria-label={`${date.label} ${count}회`}
-                        >
-                          {count > 1 ? count : ""}
-                        </span>
-                      ) : null}
+                      <span
+                        className={count > 0 ? "studyDot filled" : "studyDot empty"}
+                        style={{ transform: `scale(${scale})` }}
+                        title={`Quiz ${questionNumber} · ${date.label} · ${count}회`}
+                        aria-label={`${date.label} ${count}회`}
+                      >
+                        {count > 1 ? count : ""}
+                      </span>
                     </span>
                   );
                 })}
