@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { BlankRatioSelector } from "../components/BlankRatioSelector";
+import { QuestionStudyMatrix } from "../components/QuestionStudyMatrix";
 import { QuestionTypeSelector } from "../components/QuestionTypeSelector";
 import { SetCard } from "../components/SetCard";
 import type { AppStorage, PracticeMode, QuestionTypeFilter } from "../types/interview";
@@ -84,6 +85,15 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
           />
         ))}
       </section>
+
+      {storage.sets.map((questionSet) => (
+        <QuestionStudyMatrix
+          key={questionSet.id}
+          questionSet={questionSet}
+          progress={storage.progress[questionSet.id]}
+          questionTypeFilter={storage.settings.questionTypeFilter}
+        />
+      ))}
     </main>
   );
 }

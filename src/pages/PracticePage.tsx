@@ -155,6 +155,13 @@ export function PracticePage({ storage, setStorage, questionSet, mode, start, on
                 lastStudiedAt: nowIso,
               },
             },
+            questionDailyStudyCounts: {
+              ...(previousProgress.questionDailyStudyCounts ?? {}),
+              [questionId]: {
+                ...(previousProgress.questionDailyStudyCounts?.[questionId] ?? {}),
+                [dateKey]: (previousProgress.questionDailyStudyCounts?.[questionId]?.[dateKey] ?? 0) + 1,
+              },
+            },
             dailyStudyCounts: {
               ...(previousProgress.dailyStudyCounts ?? {}),
               [dateKey]: (previousProgress.dailyStudyCounts?.[dateKey] ?? 0) + 1,

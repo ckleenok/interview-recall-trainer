@@ -319,6 +319,134 @@ p {
   border-radius: 2px;
 }
 
+.studyMatrixSection {
+  margin: 2rem 0 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.4rem;
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sectionTitleRow h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  line-height: 1.15;
+}
+
+.sectionTitleRow p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.studyMatrixScroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.studyMatrix {
+  display: grid;
+  min-width: 720px;
+}
+
+.studyMatrixHeader,
+.studyMatrixRow {
+  display: grid;
+  grid-template-columns: minmax(128px, 1.2fr) repeat(7, minmax(72px, 1fr));
+  align-items: center;
+}
+
+.studyMatrixHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  min-height: 56px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-strong);
+}
+
+.studyMatrixRow {
+  min-height: 52px;
+  border-bottom: 1px solid rgba(42, 42, 42, 0.7);
+}
+
+.studyMatrixRow:last-child {
+  border-bottom: 0;
+}
+
+.studyMatrixCorner,
+.studyMatrixDate,
+.studyMatrixQuiz,
+.studyMatrixCell {
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+}
+
+.studyMatrixCorner,
+.studyMatrixDate {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.studyMatrixDate,
+.studyMatrixCell {
+  text-align: center;
+}
+
+.studyMatrixQuiz {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.studyMatrixQuiz span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studyMatrixQuiz strong {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.studyMatrixCell {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+}
+
+.studyDot {
+  display: inline-flex;
+  width: 1.25rem;
+  height: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #050505;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .setActions,
 .buttonRow,
 .buttonGrid {
