@@ -48,6 +48,35 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
     });
   }
 
+  function openQuestion(setId: string, questionId: string) {
+    const targetSet = storage.sets.find((questionSet) => questionSet.id === setId);
+    if (!targetSet) return;
+    const filteredQuestions =
+      storage.settings.questionTypeFilter === "all"
+        ? targetSet.questions
+        : targetSet.questions.filter((question) => question.questionType === storage.settings.questionTypeFilter);
+    const targetIndex = filteredQuestions.findIndex((question) => question.id === questionId);
+    if (targetIndex < 0) return;
+
+    setStorage((previous) => ({
+      ...previous,
+      settings: {
+        ...previous.settings,
+        lastSetId: setId,
+        lastMode: "sequential",
+      },
+      progress: {
+        ...previous.progress,
+        [setId]: {
+          ...(previous.progress[setId] ?? { sequentialIndex: 0 }),
+          sequentialIndex: targetIndex,
+          lastStudiedAt: new Date().toISOString(),
+        },
+      },
+    }));
+    onStart(setId, "sequential", "resume");
+  }
+
   return (
     <main className="page">
       <header className="homeHeader">
@@ -92,6 +121,7 @@ export function HomePage({ storage, setStorage, onImport, onStart }: HomePagePro
           questionSet={questionSet}
           progress={storage.progress[questionSet.id]}
           questionTypeFilter={storage.settings.questionTypeFilter}
+          onOpenQuestion={(questionId) => openQuestion(questionSet.id, questionId)}
         />
       ))}
     </main>

@@ -357,13 +357,13 @@ p {
 
 .studyMatrix {
   display: grid;
-  min-width: 720px;
+  min-width: 900px;
 }
 
 .studyMatrixHeader,
 .studyMatrixRow {
   display: grid;
-  grid-template-columns: minmax(128px, 1.2fr) repeat(7, minmax(72px, 1fr));
+  grid-template-columns: minmax(128px, 1.2fr) repeat(7, minmax(72px, 1fr)) minmax(88px, 0.72fr) minmax(96px, 0.78fr);
   align-items: center;
 }
 
@@ -387,21 +387,29 @@ p {
 
 .studyMatrixCorner,
 .studyMatrixDate,
+.studyMatrixReadinessHeader,
+.studyMatrixActionHeader,
 .studyMatrixQuiz,
-.studyMatrixCell {
+.studyMatrixCell,
+.studyMatrixReadiness,
+.studyMatrixAction {
   min-width: 0;
   padding: 0.65rem 0.8rem;
 }
 
 .studyMatrixCorner,
-.studyMatrixDate {
+.studyMatrixDate,
+.studyMatrixReadinessHeader,
+.studyMatrixActionHeader {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 900;
 }
 
 .studyMatrixDate,
-.studyMatrixCell {
+.studyMatrixCell,
+.studyMatrixReadiness,
+.studyMatrixAction {
   text-align: center;
 }
 
@@ -446,6 +454,22 @@ p {
   font-weight: 900;
   line-height: 1;
 }
+
+.studyMatrixReadiness {
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.studyMatrixAction button {
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #050505;
+  font-size: 0.82rem;
+}
+
 
 .setActions,
 .buttonRow,

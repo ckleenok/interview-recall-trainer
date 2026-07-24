@@ -5,6 +5,7 @@ interface QuestionStudyMatrixProps {
   questionSet: QuestionSet;
   progress?: SetProgress;
   questionTypeFilter: QuestionTypeFilter;
+  onOpenQuestion: (questionId: string) => void;
 }
 
 interface DateColumn {
@@ -29,7 +30,11 @@ function getDateColumns(): DateColumn[] {
   });
 }
 
-export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter }: QuestionStudyMatrixProps) {
+function formatReadiness(readiness?: number): string {
+  return readiness ? `${readiness}` : "-";
+}
+
+export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter, onOpenQuestion }: QuestionStudyMatrixProps) {
   const questions =
     questionTypeFilter === "all"
       ? questionSet.questions
@@ -62,10 +67,13 @@ export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter 
                 {date.label}
               </span>
             ))}
+            <span className="studyMatrixReadinessHeader" role="columnheader">Readiness</span>
+            <span className="studyMatrixActionHeader" role="columnheader">바로가기</span>
           </div>
           {questions.map((question) => {
             const totalCount = getStudyCount(progress, question.id);
             const questionNumber = questionSet.questions.findIndex((item) => item.id === question.id) + 1;
+            const readiness = progress?.readiness?.[question.id];
             return (
               <div className="studyMatrixRow" role="row" key={question.id}>
                 <div className="studyMatrixQuiz" role="rowheader">
@@ -90,6 +98,14 @@ export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter 
                     </span>
                   );
                 })}
+                <span className="studyMatrixReadiness" role="cell" title={`Readiness ${formatReadiness(readiness)}`}>
+                  {formatReadiness(readiness)}
+                </span>
+                <span className="studyMatrixAction" role="cell">
+                  <button type="button" onClick={() => onOpenQuestion(question.id)}>
+                    Quiz
+                  </button>
+                </span>
               </div>
             );
           })}
