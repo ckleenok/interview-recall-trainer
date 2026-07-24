@@ -14,7 +14,7 @@ interface DateColumn {
 }
 
 function formatShortDate(date: Date): string {
-  return new Intl.DateTimeFormat("ko-KR", { month: "numeric", day: "numeric" }).format(date);
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
 function getDateColumns(): DateColumn[] {
@@ -67,8 +67,8 @@ export function QuestionStudyMatrix({ questionSet, progress, questionTypeFilter,
                 {date.label}
               </span>
             ))}
-            <span className="studyMatrixReadinessHeader" role="columnheader">Readiness</span>
-            <span className="studyMatrixActionHeader" role="columnheader">바로가기</span>
+            <span className="studyMatrixReadinessHeader" role="columnheader">Ready</span>
+            <span className="studyMatrixActionHeader" role="columnheader">Quiz</span>
           </div>
           {questions.map((question) => {
             const totalCount = getStudyCount(progress, question.id);
